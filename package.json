@@ -1,0 +1,43 @@
+{
+  "name": "payplug",
+  "version": "0.0.0",
+  "description": "online payment module",
+  "main": "./lib/payplug.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WorkingBox/payplug.git"
+  },
+  "keywords": [
+    "payplug"
+  ],
+  "author": "WorkingBox <contact@working-box.com> (http://www.working-box.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WorkingBox/payplug/issues"
+  },
+  "devDependencies": {
+    "mocha": "~2.0.1",
+    "chai": "~1.10.0",
+    "gulp": "~3.8.10",
+    "gulp-coffee": "~2.2.0",
+    "gulp-util": "~3.0.1",
+    "chai-as-promised": "~4.1.1",
+    "sinon": "~1.12.1",
+    "sinon-chai": "~2.6.0"
+  },
+  "dependencies": {
+    "crypto": "0.0.3",
+    "fs": "0.0.2",
+    "iconv-lite": "~0.4.5",
+    "node-uuid": "~1.4.1",
+    "q": "~1.1.2",
+    "querystring": "~0.2.0",
+    "ramda": "~0.8.0",
+    "restler": "^3.2.2",
+    "stream": "0.0.1",
+    "ursa": "^0.8.0"
+  }
+}
