@@ -1,0 +1,6 @@
+{
+  "ipn_url" : "http://your-web-site/payplug/payplugipn",
+  "return_url" : "http://your-web-site/payplug/payplugreturn",
+  "cancel_url" : "http://your-web-site/payplug/payplugcancel"      
+}
+
