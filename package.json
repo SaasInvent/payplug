@@ -31,13 +31,8 @@
   "dependencies": {
     "crypto": "0.0.3",
     "fs": "0.0.2",
-    "iconv-lite": "~0.4.5",
     "node-uuid": "~1.4.1",
-    "q": "~1.1.2",
     "querystring": "~0.2.0",
-    "ramda": "~0.8.0",
-    "restler": "^3.2.2",
-    "stream": "0.0.1",
-    "ursa": "^0.8.0"
+    "restler": "^3.2.2"
   }
 }
