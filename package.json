@@ -29,10 +29,10 @@
     "sinon-chai": "~2.6.0"
   },
   "dependencies": {
-    "crypto": "0.0.3",
     "fs": "0.0.2",
     "node-uuid": "~1.4.1",
     "querystring": "~0.2.0",
-    "restler": "^3.2.2"
+    "restler": "^3.2.2",
+    "node-forge": "~0.6.20"
   }
 }
