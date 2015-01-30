@@ -5,8 +5,9 @@ querystring = require 'querystring'
 fs = require 'fs'
 forge = require('node-forge')
 path = require('path')
-#crypto = require('crypto')
-
+R = require('ramda')
+crypto = require('crypto')
+#Q = require('q')
 
 module.exports = exports  = 
 
@@ -39,21 +40,36 @@ module.exports = exports  =
     ipn.cancel_url
  
   createPayment: (res, options) ->
+#  createPayment: (options) ->        
+#    console.log "In createPayment : options.order"
+#    console.log options.order
+#    console.log options.custom_data
+#    console.log options.custom_datas
+#    testid = uuid.v1()
+#    console.log "testid : " + testid
+    deferred = Q.defer()
     data = 
       'amount' : options.amount
-      'currency' : options.currency? ||'EUR'
+      'currency' : options.currency ||'EUR'
       'ipn_url' : @getIpnUrl()
       'return_url' : @getReturnUrl()
       'cancel_url' : @getCancelUrl()
-      'order' : options.order? || uuid.v1()
+      'order' : options.order || uuid.v1()
       'email' : options.email
       'first_name' : options.first_name
       'last_name' : options.last_name 
-      'custom_data' : options.custom_data? || new Date().toString()
+      'custom_data' : options.custom_data || uuid.v1()
+      'custom_datas' : options.custom_datas || uuid.v1()
     
     payPLUGUrl = @prepareUrl(data)
-    console.log  "payPLUGUrl : " +  payPLUGUrl     
-  # res.redirect(payPLUGUrl)
+    
+    answer =
+       'url' : @prepareUrl(data)
+#    console.log  "payPLUGUrl : " +  payPLUGUrl 
+#    console.log answer
+    res.json answer
+#    deferred.resolve(answer)        
+#    deferred.promise 
     @
      
     
@@ -97,110 +113,34 @@ module.exports = exports  =
     # Your have to implement this for yourself!
     order = req.body.order
     console.log "The following order exists and can be saved : " + order
-
-
-
-      
-#### ARCHIVES : !
-      
-      
-      
-#     console.log typeof req.body
-#     console.log "Payplug Signature : "
-#     console.log req.headers['payplug-signature']  
-#     pemPublic = @getPayplugPublicKey()
-#     console.log "Public key : "
-#     console.log pemPublic
-#     pemPrivate = @getYourPrivateKey()
-#     privateKey = pki.privateKeyFromPem(pemPrivate) 
-#     publicKey = pki.publicKeyFromPem(pemPublic)       
-    
+    @checkIdentity(req)
     
 
-#     md = forge.md.sha1.create()
-#     md.update('sign this', 'utf8')
-    
-#     signature = privateKey.sign(md)
-    
-#     verified = publicKey.verify(md.digest().bytes(), signature)
-#     console.log verified  
-  
-    # signer = crypto.createSign('sha1')
-     # signer.update('hola');
-    # signer.update(req.body)    
-   #  sign = signer.sign(privateKey,'base64')  
-  
-#     console.log data
-#     pki = forge.pki
 
-    
-#     sign = crypto.createSign('RSA-SHA1')
-#     sign.update(data64)    
-#     sig = sign.sign(privateKey, 'base64')
-    
-#     verify = crypto.createVerify('RSA-SHA1')
-#     verify.update(sig)
-#     verified = verify.verify(publicKey, data64, 'base64')
-#     console.log "verified : "
 
-   # data = JSON.stringify req.body
-#    data = "abcedef"
-#    data64 = new Buffer(data).toString('base64')    
-   # dataBuff = new Buffer(req.body, 'utf8')
-   # dataUri = encodeURIComponent data
-  #  console.log "data : "    
+#  /**
+#    * Checks if a message and its signature match with the given public key
+#    * @param  {String} message   The message with format "field1=val1&field2=val2..."
+#    * @param  {String} signature The RSA SHA1 signature of the message
+#    * @param  {String} pubkey    The public key in UTF8
+#    * @return {Boolean}          If the message is signed by the owner of the public key
+#    */
+  checkSignature : (message, signature, pubkey) ->
     
+    check = crypto.createVerify('SHA1')
+    check.update(message);
+    return check.verify(pubkey, signature, 'base64')      
     
-#    console.log crypto.getHashes()
-    
-    
-  #  publicKey = pki.publicKeyFromPem(pemPublic)
- #   privateKey = pki.privateKeyFromPem(pemPrivate)
-#     md = forge.md.sha1.create();
-#  #   md.update(data, 'utf8')
-#     md.update(data, 'utf8')
- 
-#     signature = forge.util.decode64(req.headers['payplug-signature'] )
-
-#     #verify data with a public key
-#    # console.log publicKey.verify(md.digest().bytes(), signature) 
-#     verified = publicKey.verify(md.digest().bytes(), signature)is true
-#     if (verified)
-#       console.log "signature is valid!"
-#       console.log typeof verified
-#       return true
-#     else
-#       console.log "signature is invalid"
-#       console.log typeof verified
-#       return false
+  checkIdentity : (req) ->
+        pubkey = @getPayplugPublicKey().toString()
+        _sign  = forge.util.decode64(req.headers['payplug-signature'])
+        message = R.mapObj(@encodeUri, req.body)
+        _message =  querystring.stringify message
+        _message =  new Buffer(_message).toString('base64') 
+        _check = @checkSignature(_message, _sign, pubkey)
+        console.log _check
         
-    #signature = req.headers['payplug-signature']  
-#    signature = forge.util.decode64(req.headers['payplug-signature'] )
- 
-#    verifier = crypto.createVerify("SHA1")
-#    verifier.update(encoded_json)
-#    console.log "verified : "
-#    console.log verifier.verify(publicKey, signature, "base64")    
- #     pki = forge.pki
-#      console.log "req.body : "
-#      console.log req.body
-
-#      publicKey = @getPayplugPublicKey().toString()
-#      verifier = crypto.createVerify('sha1')
-#      console.log typeof req.body
-#      console.log req.body.order
-#      data = JSON.stringify req.body
-#      dataSixtyFour=  new Buffer(data).toString('base64') 
-#      signature64 = new Buffer(req.headers['payplug-signature']).toString('base64')
-#      console.log "type of req.headers  : " + typeof req.headers['payplug-signature']
-#      console.log "type of signature64 : "
-#      console.log typeof signature64
-#      console.log signature64
-#      console.log "dataSixtyFour" + dataSixtyFour
-#      console.log typeof dataSixtyFour
-#      verifier.update(dataSixtyFour)
-#      ver = verifier.verify(publicKey, signature64, 'base64')
-#      #ver = verifier.verify(publicKey, req.headers['payplug-signature'], 'base64')
-#      console.log(ver) 
-  
-  
+  encodeUri : (value) ->
+    #encodeURIComponent value
+    value
+      
